@@ -63,6 +63,10 @@ Note that it needs to remain `undefined` if you are building a package with embe
 
 Specifies whether the imported `.node` file will be copied to the output directory.
 
+### `checkResourcesPath` (default: `false`)
+
+For simpler Electron packaging. If you want to access a `.node` module that you've moved [into the `resources` folder of your packaged electron app](https://www.electron.build/configuration/contents#extraresources), this provides an override to easily locate a file there.
+
 ## Releasing a new version
 
 1.  Bump version number in the `package.json` and `CHANGELOG.md` files.

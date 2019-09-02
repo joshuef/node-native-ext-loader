@@ -3,6 +3,7 @@ var path = require("path");
 module.exports = function(content) {
   const defaultConfig = {
     basePath: [],
+    checkResourcesPath : false,
     rewritePath: undefined,
     emit: true
   };
@@ -17,7 +18,7 @@ module.exports = function(content) {
       throw new Error("emitFile function is not available");
     }
   }
-  
+
   this.addDependency(this.resourcePath);
 
   if (config.rewritePath) {
@@ -28,6 +29,7 @@ module.exports = function(content) {
     } else {
       filePath = JSON.stringify(path.join(config.rewritePath, fileName));
     }
+
 
     return (
       "try { global.process.dlopen(module, " +
@@ -42,12 +44,16 @@ module.exports = function(content) {
     const filePath = JSON.stringify(filePathArray).slice(1, -1);
 
     return (
-      "const path = require('path');" +
-      "const filePath = path.resolve(__dirname, " +
-      filePath +
-      ");" +
-      "try { global.process.dlopen(module, filePath); } " +
-      "catch(exception) { throw new Error('Cannot open ' + filePath + ': ' + exception); };"
+        `
+        const path = require('path');
+        const checkResourcesPath = ${ config.checkResourcesPath};
+        let filePath = path.resolve(__dirname, ${filePath} );
+
+        if( checkResourcesPath ){ filePath = path.resolve( process.resourcesPath, "${fileName}" )}
+
+        try { global.process.dlopen(module, filePath); }
+        catch(exception) { throw new Error('Cannot open ' + filePath + ': ' + exception); };
+        `
     );
   }
 };

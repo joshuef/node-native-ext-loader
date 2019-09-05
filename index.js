@@ -44,13 +44,15 @@ module.exports = function(content) {
     const filePath = JSON.stringify(filePathArray).slice(1, -1);
 
     return (
-        `
+		`
+        const remote = require('electron').remote;
         const path = require('path');
         const checkResourcesPath = ${ config.checkResourcesPath};
         let filePath = path.resolve(__dirname, ${filePath} );
 
         if( checkResourcesPath ){ filePath = path.resolve( process.resourcesPath, "${fileName}" )}
 
+        if( remote && remote.process.env.LIB_PATH ){ filePath = path.resolve( global.process.env.LIB_PATH, "${fileName}" )}
         try { global.process.dlopen(module, filePath); }
         catch(exception) { throw new Error('Cannot open ' + filePath + ': ' + exception); };
         `
